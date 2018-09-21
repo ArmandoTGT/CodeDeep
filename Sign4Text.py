@@ -36,6 +36,13 @@ def avaliacao(modelo, atributos_teste, classe_teste):
   print(matriz)
 
 
+def interval_mapping(image, from_min, from_max, to_min, to_max):
+    from_range = from_max - from_min
+    to_range = to_max - to_min
+    scaled = np.array((image - from_min) / float(from_range), dtype=float)
+    return to_min + (scaled * to_range)
+
+
 
 class MetricsCheckpoint(Callback):
     
@@ -49,7 +56,8 @@ class MetricsCheckpoint(Callback):
             np.save(self.savepath, self.history)
 
 
-imageSize = 64
+imageSize = 100
+s_mask = 17
 
 def to_tf_format(imgs):
     return np.stack([img[:, :, np.newaxis] for img in imgs], axis=0).astype(np.float32)
@@ -129,10 +137,13 @@ def get_data(path1, path2):
                     img_file = cv2.imread(path2 + people + '/' + folderName + '/' + image_filename, cv2.IMREAD_COLOR)                    
                     if img_file is not None:                                                
                         #img_file = rgb2lab(img_file / 255.0)[:,:,0]
+                        img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')                      
+                        sobelx = np.abs(cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=s_mask))
+                        sobelx = interval_mapping(sobelx, np.min(sobelx), np.max(sobelx), 0, 255)
+                        sobely = np.abs(cv2.Sobel(img_file,cv2.CV_64F,0,1,ksize=s_mask))
+                        sobely = interval_mapping(sobely, np.min(sobely), np.max(sobely), 0, 255)
+                        img_file = 0.5 * sobelx + 0.5 * sobely                        
                         img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')
-                        dx = ndimage.sobel(img_file, 0)
-                        dy = ndimage.sobel(img_file, 1)
-                        img_file = np.hypot(dx, dy)
                         img_arr = np.asarray(img_file)
                         X.append(img_arr.astype(np.float16))
                         y.append(label)
@@ -208,10 +219,13 @@ def get_data(path1, path2):
                     img_file = cv2.imread(path2 + people + '/' + folderName + '/' + image_filename, cv2.IMREAD_COLOR)
                     if img_file is not None:                                                
                         #img_file = rgb2lab(img_file / 255.0)[:,:,0]
+                        img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')                       
+                        sobelx = np.abs(cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=s_mask))
+                        sobelx = interval_mapping(sobelx, np.min(sobelx), np.max(sobelx), 0, 255)
+                        sobely = np.abs(cv2.Sobel(img_file,cv2.CV_64F,0,1,ksize=s_mask))
+                        sobely = interval_mapping(sobely, np.min(sobely), np.max(sobely), 0, 255)
+                        img_file = 0.5 * sobelx + 0.5 * sobely                        
                         img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')
-                        dx = ndimage.sobel(img_file, 0)
-                        dy = ndimage.sobel(img_file, 1)
-                        img_file = np.hypot(dx, dy)
                         img_arr = np.asarray(img_file)
                         X.append(img_arr.astype(np.float16))
                         y.append(label)
@@ -285,10 +299,13 @@ def get_data(path1, path2):
                     img_file = cv2.imread(path2 + people + '/' + folderName + '/' + image_filename, cv2.IMREAD_COLOR)
                     if img_file is not None:                                              
                         #img_file = rgb2lab(img_file / 255.0)[:,:,0]
+                        img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')                           
+                        sobelx = np.abs(cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=s_mask))
+                        sobelx = interval_mapping(sobelx, np.min(sobelx), np.max(sobelx), 0, 255)
+                        sobely = np.abs(cv2.Sobel(img_file,cv2.CV_64F,0,1,ksize=s_mask))
+                        sobely = interval_mapping(sobely, np.min(sobely), np.max(sobely), 0, 255)
+                        img_file = 0.5 * sobelx + 0.5 * sobely                        
                         img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')
-                        dx = ndimage.sobel(img_file, 0)
-                        dy = ndimage.sobel(img_file, 1)  
-                        img_file = np.hypot(dx, dy)
                         img_arr = np.asarray(img_file)
                         X.append(img_arr.astype(np.float16))
                         y.append(label)
@@ -364,10 +381,13 @@ def get_data(path1, path2):
                     img_file = cv2.imread(path2 + people + '/' + folderName + '/' + image_filename, cv2.IMREAD_COLOR)
                     if img_file is not None:                                          
                         #img_file = rgb2lab(img_file / 255.0)[:,:,0]
+                        img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')                     
+                        sobelx = np.abs(cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=s_mask))
+                        sobelx = interval_mapping(sobelx, np.min(sobelx), np.max(sobelx), 0, 255)
+                        sobely = np.abs(cv2.Sobel(img_file,cv2.CV_64F,0,1,ksize=s_mask))
+                        sobely = interval_mapping(sobely, np.min(sobely), np.max(sobely), 0, 255)
+                        img_file = 0.5 * sobelx + 0.5 * sobely                        
                         img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')
-                        dx = ndimage.sobel(img_file, 0)
-                        dy = ndimage.sobel(img_file, 1)
-                        img_file = np.hypot(dx, dy)
                         img_arr = np.asarray(img_file)
                         X.append(img_arr.astype(np.float16))
                         y.append(label)
@@ -445,10 +465,13 @@ def get_data(path1, path2):
                     img_file = cv2.imread(path2 + people + '/' + folderName + '/' + image_filename, cv2.IMREAD_COLOR)
                     if img_file is not None:                                                
                         #img_file = rgb2lab(img_file / 255.0)[:,:,0]
-                        img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')
-                        dx = ndimage.sobel(img_file, 0)
-                        dy = ndimage.sobel(img_file, 1)
-                        img_file = np.hypot(dx, dy)
+                        img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')                       
+                        sobelx = np.abs(cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=s_mask))
+                        sobelx = interval_mapping(sobelx, np.min(sobelx), np.max(sobelx), 0, 255)
+                        sobely = np.abs(cv2.Sobel(img_file,cv2.CV_64F,0,1,ksize=s_mask))
+                        sobely = interval_mapping(sobely, np.min(sobely), np.max(sobely), 0, 255)
+                        img_file = 0.5 * sobelx + 0.5 * sobely                        
+                        img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')   
                         img_arr = np.asarray(img_file)
                         X.append(img_arr.astype(np.float16))
                         y.append(label)           
@@ -519,11 +542,14 @@ def get_data(path1, path2):
             for image_filename in tqdm(os.listdir(path1 + folderName)):
                 img_file = cv2.imread(path1 + folderName + '/' + image_filename, cv2.IMREAD_COLOR)
                 if img_file is not None:                                        
-                    #img_file = rgb2lab(img_file / 255.0)[:,:,0]
-                    img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')
-                    dx = ndimage.sobel(img_file, 0)
-                    dy = ndimage.sobel(img_file, 1)
-                    img_file = np.hypot(dx, dy)
+                    #img_file = rgb2lab(img_file / 255.0)[:,:,0]  
+                    img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')                      
+                    sobelx = np.abs(cv2.Sobel(img_file, cv2.CV_64F, 1, 0, ksize=s_mask))
+                    sobelx = interval_mapping(sobelx, np.min(sobelx), np.max(sobelx), 0, 255)
+                    sobely = np.abs(cv2.Sobel(img_file,cv2.CV_64F,0,1,ksize=s_mask))
+                    sobely = interval_mapping(sobely, np.min(sobely), np.max(sobely), 0, 255)
+                    img_file = 0.5 * sobelx + 0.5 * sobely                    
+                    img_file = skimage.transform.resize(img_file, (imageSize, imageSize, 3), mode='reflect')                         
                     img_arr = np.asarray(img_file)
                     X.append(img_arr.astype(np.float16))
                     y.append(label)
@@ -539,8 +565,8 @@ def get_data(path1, path2):
 
 
 
-train_dir1 = "/home/lavid-deep/Sign4Text/ASL/"
-train_dir2 = "/home/lavid-deep/Sign4Text/PastaVazia/"
+train_dir1 = "/home/lavid-deep/Sign4Text/asl_alphabet_train/"
+train_dir2 = "/home/lavid-deep/Sign4Text/dataset5/"
 X_train, y_train = get_data(train_dir1, train_dir2)
 
 
@@ -549,9 +575,8 @@ np.save("/home/lavid-deep/Sign4Text/ASL_SOBEL_Y_RGB16.npy", y_train)
 
 #dataset = read_dataset('dataset', N_CLASSES, len(PERSON_FOLDERS), RESIZED_IMAGE)
 '''
-
-X_train = np.load('/home/lavid-deep/Sign4Text/ASL_64_X_RGB16(64).npy')
-y_train = np.load('/home/lavid-deep/Sign4Text/ASL_64_Y_RGB16(64).npy')
+X_train = np.load('/home/lavid-deep/Sign4Text/ASL_SOBEL_X_RGB16.npy')
+y_train = np.load('/home/lavid-deep/Sign4Text/ASL_SOBEL_Y_RGB16.npy')
 
 
 
@@ -567,19 +592,18 @@ y_testHot = to_categorical(y_test, num_classes = 30)
 map_characters = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J', 10: 'K', 11: 'L', 12: 'M', 13: 'N', 14: 'O', 15: 'P', 16: 'Q', 17: 'R', 18: 'S', 19: 'T', 20: 'U', 21: 'V', 22: 'W', 23: 'X', 24: 'Y', 25: 'Z', 26: 'del', 27: 'nothing', 28: 'space', 29: 'other'}
   
 
-
-cnn_model = load_model('/home/lavid-deep/Sign4Text/ModeloASLDuplamenteTreinadoLAB.h5')
-avaliacao(cnn_model, X_test, y_testHot)
+#cnn_model = load_model('/home/lavid-deep/Sign4Text/ModeloASLDuplamenteTreinadoLAB.h5')
+#avaliacao(cnn_model, X_test, y_testHot)
 
 X_train, y_trainHot = shuffle(X_train, y_trainHot, random_state=13)
 X_test, y_testHot = shuffle(X_test, y_testHot, random_state=13)
 
 map_characters1 = map_characters
 class_weight1 = class_weight.compute_class_weight('balanced', np.unique(y_train), y_train)
-weight_path1 = 'vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5'
+weight_path1 = '/home/lavid-deep/Sign4Text/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5'
 
 model = VGG16(weights = weight_path1, include_top=False, input_shape=(imageSize, imageSize, 3))
-
+print("foi")
 optimizer1 = keras.optimizers.Adam()
  
 def pretrainedNetwork(xtrain,ytrain,xtest,ytest, model, classweight, numclasses, numepochs, optimizer, labels):
@@ -609,8 +633,9 @@ def pretrainedNetwork(xtrain,ytrain,xtest,ytest, model, classweight, numclasses,
     
     return model
   
-model = pretrainedNetwork(X_train, y_trainHot, X_test, y_testHot, model, class_weight1, 30, 10, optimizer1, map_characters1)
+print("ouie")
+model = pretrainedNetwork(X_train, y_trainHot, X_test, y_testHot, model, class_weight1, 30, 20, optimizer1, map_characters1)
 
 
-model.save('/home/lavid-deep/Sign4Text/ModeloASLDuplamenteTreinadoRGB10E64.h5')
+model.save('/home/lavid-deep/Sign4Text/ModeloASLDuplamenteTreinadoRGB20E64SOBEL.h5')
 '''

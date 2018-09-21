@@ -21,6 +21,7 @@ from skimage.color import rgb2lab
 from tqdm import tqdm
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import cross_val_score
+from scipy import ndimage
 
 
 
@@ -78,14 +79,17 @@ def olhafunc(indice):
     elif indice == 25:
         return 'Z'
 
-cnn_model = load_model('Sign4Text/ModeloASLDuplamenteTreinadoRGB10E64.h5')
+cnn_model = load_model('/home/lavid-deep/Sign4Text/ModeloASLDuplamenteTreinadoRGB20E64SOBEL.h5')
 imagens = []
-for image_filename in tqdm(os.listdir("/home/lavid-deep/treinamentoCom2DS/ASL/Z/")):
-    img_file = cv2.imread("/home/lavid-deep/treinamentoCom2DS/ASL/Z/" + image_filename, cv2.IMREAD_COLOR)
+for image_filename in tqdm(os.listdir("/home/lavid-deep/Sign4Text/asl_alphabet_train/T/")):
+    img_file = cv2.imread("/home/lavid-deep/Sign4Text/asl_alphabet_train/T/" + image_filename, 0)
 
     if img_file is not None:
         #img_file = rgb2lab(img_file / 255.0)[:,:,0]
         img_file = skimage.transform.resize(img_file, (64, 64, 3), mode='reflect')
+        dx = ndimage.sobel(img_file, 0)
+        dy = ndimage.sobel(img_file, 1)
+        img_file = np.hypot(dx, dy)
         img_arr = np.asarray(img_file.astype(np.float16))        
         img_arr = img_arr.reshape((1, 64, 64, 3))
         
